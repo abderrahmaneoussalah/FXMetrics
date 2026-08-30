@@ -3,7 +3,7 @@ name: "4 - Vérifier les zones (auto)"
 on:
   workflow_dispatch: {}
   schedule:
-    - cron: "*/15 * * * *"   # toutes les 15 minutes, 24h/24 (ajuste si besoin, voir README)
+    - cron: "*/15 * * * 1-5"   # toutes les 15 min, du lundi au vendredi uniquement (marchés fermés le week-end)
 
 permissions:
   contents: write
