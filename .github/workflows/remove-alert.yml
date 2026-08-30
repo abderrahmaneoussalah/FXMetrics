@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       id:
-        description: "Id de la zone à supprimer (voir workflow 'Lister les zones')"
+        description: "Numéro de la zone à supprimer, SANS le # (ex: 1). Vois les numéros via le workflow '3 - Lister les zones'."
         type: string
         required: true
 
