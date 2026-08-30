@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "ticker": "CHF=X",
+    "label": "USD/CHF",
+    "level": 0.80149,
+    "tolerance": 0.2,
+    "note": "",
+    "active": true,
+    "created_at": "2026-08-30 18:04 UTC",
+    "triggered_at": null,
+    "triggered_price": null
+  }
+]
