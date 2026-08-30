@@ -4,9 +4,48 @@ on:
   workflow_dispatch:
     inputs:
       ticker:
-        description: "Ticker (ex: EURUSD=X, AAPL, BTC-USD, GC=F)"
-        type: string
+        description: "Instrument (seulement ceux scannés par FXmetrics)"
+        type: choice
         required: true
+        default: "EUR/USD (EURUSD=X)"
+        options:
+          - "EUR/USD (EURUSD=X)"
+          - "GBP/USD (GBPUSD=X)"
+          - "USD/JPY (JPY=X)"
+          - "AUD/USD (AUDUSD=X)"
+          - "USD/CAD (CAD=X)"
+          - "USD/CHF (CHF=X)"
+          - "USD/NOK (NOK=X)"
+          - "NZD/USD (NZDUSD=X)"
+          - "EUR/GBP (EURGBP=X)"
+          - "EUR/JPY (EURJPY=X)"
+          - "GBP/JPY (GBPJPY=X)"
+          - "AUD/JPY (AUDJPY=X)"
+          - "AUD/NZD (AUDNZD=X)"
+          - "EUR/CHF (EURCHF=X)"
+          - "EUR/CAD (EURCAD=X)"
+          - "GBP/CAD (GBPCAD=X)"
+          - "USD/MXN (USDMXN=X)"
+          - "USD/BRL (USDBRL=X)"
+          - "USD/ZAR (USDZAR=X)"
+          - "USD/SEK (USDSEK=X)"
+          - "USD/SGD (USDSGD=X)"
+          - "USD/PLN (USDPLN=X)"
+          - "USD/INR (USDINR=X)"
+          - "USD/HUF (USDHUF=X)"
+          - "S&P 500 (^GSPC)"
+          - "Nasdaq 100 (^NDX)"
+          - "Dow Jones (^DJI)"
+          - "DAX 40 (^GDAXI)"
+          - "FTSE 100 (^FTSE)"
+          - "Nikkei 225 (^N225)"
+          - "Or (GC=F)"
+          - "Argent (SI=F)"
+          - "Cuivre (HG=F)"
+          - "Platine (PL=F)"
+          - "WTI (CL=F)"
+          - "Brent (BZ=F)"
+          - "Gaz nat. (NG=F)"
       level:
         description: "Niveau de prix (ex: 1.0850)"
         type: string
