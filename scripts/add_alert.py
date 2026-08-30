@@ -1,22 +1,28 @@
 # ============================================================
 # 🔔 Price Alerts -- AJOUTER UNE ZONE
 # Paramètres (fournis par le formulaire du workflow) :
-#   ALERT_TICKER    ex: EURUSD=X, AAPL, BTC-USD, GC=F
+#   ALERT_TICKER    envoyé par le menu déroulant, ex: "EUR/USD (EURUSD=X)"
 #   ALERT_LEVEL     ex: 1.0850
 #   ALERT_TOLERANCE ex: 0.001   (optionnel, défaut = 0.1% du niveau)
 #   ALERT_NOTE      ex: "Résistance hebdo"
 # ============================================================
 import os
+import re
 
 from alerts_common import load_alerts, save_alerts, next_id, now_iso
 
-ticker = os.environ.get('ALERT_TICKER', '').strip()
+raw_choice = os.environ.get('ALERT_TICKER', '').strip()
 level_raw = os.environ.get('ALERT_LEVEL', '').strip()
 tol_raw = os.environ.get('ALERT_TOLERANCE', '').strip()
 note = os.environ.get('ALERT_NOTE', '').strip()
 
-if not ticker:
-    raise SystemExit("❌ Ticker manquant. Exemples : EURUSD=X (forex), AAPL (action), BTC-USD (crypto), GC=F (or futures).")
+if not raw_choice:
+    raise SystemExit("❌ Ticker manquant.")
+
+# Le menu déroulant envoie "Label (TICKER)" -> on extrait juste le ticker.
+m = re.search(r'\(([^)]+)\)\s*$', raw_choice)
+ticker = m.group(1).strip() if m else raw_choice
+label = raw_choice.split(' (')[0].strip() if m else raw_choice
 
 try:
     level = float(level_raw)
@@ -36,6 +42,7 @@ alerts = load_alerts()
 alert = {
     'id': next_id(alerts),
     'ticker': ticker,
+    'label': label,
     'level': level,
     'tolerance': tolerance,
     'note': note,
@@ -47,9 +54,9 @@ alert = {
 alerts.append(alert)
 save_alerts(alerts)
 
-print(f"✅ Zone #{alert['id']} créée : {ticker} @ {level} (±{tolerance})" + (f' — {note}' if note else ''))
+print(f"✅ Zone #{alert['id']} créée : {label} ({ticker}) @ {level} (±{tolerance})" + (f' — {note}' if note else ''))
 print(f"   Se déclenchera si le prix entre dans [{level - tolerance:.6g} ; {level + tolerance:.6g}]")
 print(f"\n📋 Zones actives ({sum(1 for a in alerts if a['active'])}) :")
 for a in alerts:
     if a['active']:
-        print(f"   #{a['id']:<4} {a['ticker']:<12} @ {a['level']:<10} ±{a['tolerance']:<8} {a['note']}")
+        print(f"   #{a['id']:<4} {a.get('label', a['ticker']):<12} @ {a['level']:<10} ±{a['tolerance']:<8} {a['note']}")
