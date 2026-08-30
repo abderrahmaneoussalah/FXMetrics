@@ -8,6 +8,7 @@ import os
 import json
 from pathlib import Path
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 DATA_DIR = Path(os.environ.get('ALERTS_DATA_DIR', 'data'))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
@@ -17,6 +18,8 @@ LAST_PRICES_PATH = DATA_DIR / 'last_prices.json'
 
 TG_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
 TG_CHAT = os.environ.get('TELEGRAM_CHAT_ID')
+
+PARIS_TZ = ZoneInfo('Europe/Paris')
 
 
 def now_iso():
@@ -64,3 +67,21 @@ def envoyer_telegram(msg):
                       data={'chat_id': TG_CHAT, 'text': msg, 'parse_mode': 'HTML'}, timeout=10)
     except Exception as e:
         print(f'   Telegram KO: {e}')
+
+
+def is_within_active_week():
+    """Lundi 00:00 -> samedi 00:00, heure de Paris. Utilise la vraie base de
+    fuseaux horaires (zoneinfo), qui gère automatiquement le passage
+    heure d'été / heure d'hiver -- aucun ajustement manuel du cron requis."""
+    now_paris = datetime.now(PARIS_TZ)
+    return now_paris.weekday() < 5  # 0=lundi ... 4=vendredi, 5=samedi, 6=dimanche
+
+
+def write_summary(md_text):
+    """Écrit dans le résumé du run GitHub Actions (visible directement sur la
+    page du run, sans avoir besoin d'ouvrir les logs d'un job)."""
+    path = os.environ.get('GITHUB_STEP_SUMMARY')
+    if not path:
+        return
+    with open(path, 'a', encoding='utf-8') as f:
+        f.write(md_text + '\n')
