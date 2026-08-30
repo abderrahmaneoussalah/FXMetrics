@@ -9,7 +9,7 @@
 import os
 import re
 
-from alerts_common import load_alerts, save_alerts, next_id, now_iso
+from alerts_common import load_alerts, save_alerts, next_id, now_iso, write_summary
 
 raw_choice = os.environ.get('ALERT_TICKER', '').strip()
 level_raw = os.environ.get('ALERT_LEVEL', '').strip()
@@ -60,3 +60,10 @@ print(f"\n📋 Zones actives ({sum(1 for a in alerts if a['active'])}) :")
 for a in alerts:
     if a['active']:
         print(f"   #{a['id']:<4} {a.get('label', a['ticker']):<12} @ {a['level']:<10} ±{a['tolerance']:<8} {a['note']}")
+
+active = [a for a in alerts if a['active']]
+lines = [f"## ✅ Zone #{alert['id']} créée", f"**{label}** ({ticker}) @ {level} (±{tolerance})" + (f" — {note}" if note else ""),
+         "", f"### Zones actives ({len(active)})", "| ID | Instrument | Niveau | Tolérance | Note |", "|---|---|---|---|---|"]
+for a in active:
+    lines.append(f"| **{a['id']}** | {a.get('label', a['ticker'])} | {a['level']} | ±{a['tolerance']} | {a.get('note','')} |")
+write_summary("\n".join(lines))
