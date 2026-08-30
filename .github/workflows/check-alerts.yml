@@ -3,7 +3,7 @@ name: "4 - Vérifier les zones (auto)"
 on:
   workflow_dispatch: {}
   schedule:
-    - cron: "*/15 * * * 1-5"   # toutes les 15 min, du lundi au vendredi uniquement (marchés fermés le week-end)
+    - cron: "*/15 * * * *"   # tourne tout le temps ; c'est check_alerts.py qui décide si on est en semaine active (heure de Paris, DST géré automatiquement)
 
 permissions:
   contents: write
