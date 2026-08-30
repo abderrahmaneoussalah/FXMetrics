@@ -1,0 +1,48 @@
+name: "1 - Ajouter une zone d'alerte"
+
+on:
+  workflow_dispatch:
+    inputs:
+      ticker:
+        description: "Ticker (ex: EURUSD=X, AAPL, BTC-USD, GC=F)"
+        type: string
+        required: true
+      level:
+        description: "Niveau de prix (ex: 1.0850)"
+        type: string
+        required: true
+      tolerance:
+        description: "Tolérance autour du niveau (optionnel, défaut = 0.1% du niveau)"
+        type: string
+        default: ""
+      note:
+        description: "Note (optionnel, ex: Résistance hebdo)"
+        type: string
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  add:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Ajouter la zone
+        env:
+          ALERT_TICKER: ${{ github.event.inputs.ticker }}
+          ALERT_LEVEL: ${{ github.event.inputs.level }}
+          ALERT_TOLERANCE: ${{ github.event.inputs.tolerance }}
+          ALERT_NOTE: ${{ github.event.inputs.note }}
+        run: python scripts/add_alert.py
+      - name: Commit
+        run: |
+          git config user.name "price-alerts-bot"
+          git config user.email "price-alerts-bot@users.noreply.github.com"
+          git add data/
+          git diff --cached --quiet || git commit -m "Ajout zone: ${{ github.event.inputs.ticker }} @ ${{ github.event.inputs.level }}"
+          git push
